@@ -12,7 +12,7 @@ services:
       - ./opt-rocketpanel:/opt/rocketpanel
       - /app/var
     ports:
-      - "8443:443"
+      - "8444:443"
     depends_on:
       - mysql
     links:
