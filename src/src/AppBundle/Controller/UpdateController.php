@@ -56,9 +56,9 @@ class UpdateController extends Controller
 
 	    # add control over docker socket for update process
 	    $containerConfig->setVolumes(['/var/run/docker.sock:/var/run/docker.sock']);
-	    
+
 	    # create the rocketpanel-updater container
-        $containerManager->create($containerConfig, ['name' => 'rocketpanel-updater']);
+        $containerManager->create($containerConfig, ['name' => 'rocketpanel-updater', 'rm' => true]);
 
         return new JsonResponse();
     }
