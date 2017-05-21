@@ -41,8 +41,10 @@ class UpdateController extends Controller
 		    ]
 	    );
 
-	    # remove container afterwards
-	    $containerManager->remove('rocketpanel-updater');
+	    try {
+		    # remove container if exists
+		    $containerManager->remove('rocketpanel-updater');
+	    } catch (\Exception $e) {}
 
 		$logger->info('spawing update container');
 
