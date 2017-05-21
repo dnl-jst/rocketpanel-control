@@ -32,7 +32,7 @@ class UpdateController extends Controller
 	    $containerManager = $docker->getContainerManager();
 
 	    # pull latest version of dnljst/rocketpanel-updater
-	    shell_exec('docker pull dnljst/rocketpanel-updater:latest');
+	    $logger->info(shell_exec('docker pull dnljst/rocketpanel-updater:latest'));
 
 	    try {
 		    # remove container if exists
