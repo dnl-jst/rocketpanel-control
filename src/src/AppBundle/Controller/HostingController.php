@@ -20,7 +20,7 @@ class HostingController extends Controller
      * @Route("/", name="hosting_get")
      * @Method({"GET"})
      */
-    public function indexAction()
+    public function getAction()
     {
     	/** @var EntityManager $em */
     	$em = $this->getDoctrine()->getManager();
@@ -35,6 +35,7 @@ class HostingController extends Controller
 		foreach ($hostings as $hosting) {
 
 			$response['elements'][] = [
+				'id'       => $hosting->getId(),
 				'hostname' => $hosting->getHostname(),
 				'image'    => $hosting->getImage()->getImageName(),
 				'created'  => $hosting->getCreated()->format(\DateTime::W3C)
@@ -42,6 +43,30 @@ class HostingController extends Controller
 		}
 
         return new JsonResponse($response);
+    }
+
+	/**
+	 * @Route("/{id}", name="hosting_getById")
+	 * @Method({"GET"})
+	 */
+    public function getByIdAction($id)
+    {
+	    /** @var EntityManager $em */
+	    $em = $this->getDoctrine()->getManager();
+
+	    /** @var Hosting[] $hostings */
+	    $hosting = $em->getRepository('AppBundle:Hosting')->findOneBy(['id' => $id]);
+
+	    $response = [];
+
+	    $response['hosting'] = [
+	    	'id'       => $hosting->getId(),
+		    'hostname' => $hosting->getHostname(),
+		    'image'    => $hosting->getImage()->getImageName(),
+		    'created'  => $hosting->getCreated()->format(\DateTime::W3C)
+	    ];
+
+	    return new JsonResponse($response);
     }
 
 }
