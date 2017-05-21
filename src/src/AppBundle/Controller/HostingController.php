@@ -3,17 +3,22 @@
 namespace AppBundle\Controller;
 
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
-class DefaultController extends Controller
+/**
+ * @Route("/hosting")
+ */
+class HostingController extends Controller
 {
     /**
-     * @Route("/", name="index")
+     * @Route("/", name="hosting_get")
+     * @Method({"GET"})
      */
-    public function indexAction(Request $request)
+    public function indexAction()
     {
-        return new JsonResponse();
+        return new JsonResponse('hosting');
     }
 }
