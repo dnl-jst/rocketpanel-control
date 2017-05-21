@@ -5,7 +5,7 @@ services:
   web:
     container_name: rocketpanel-control
     build: .
-    image: rocketpanel-control
+    image: dnljst/rocketpanel-control
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./src:/app
