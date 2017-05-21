@@ -69,4 +69,70 @@ class HostingController extends Controller
 	    return new JsonResponse($response);
     }
 
+	/**
+	 * @Route("/", name="hosting_post")
+	 * @Method({"POST"})
+	 */
+    public function postAction(Request $request)
+    {
+		$hostname  = $request->get('hostname');
+		$imageName = $request->get('imageName');
+
+		if (!$hostname || !$imageName){
+
+			return new JsonResponse([
+				'code' => 501,
+				'message' => 'parameters missing'
+			], 501);
+		}
+
+	    if (!preg_match('~^([a-z0-9-]+\.)+[a-z]{2,6}$~', $hostname)) {
+
+		    return new JsonResponse([
+			    'code' => 502,
+			    'message' => 'invalid hostname'
+		    ],502);
+	    }
+
+	    /** @var EntityManager $em */
+	    $em = $this->getDoctrine()->getManager();
+
+	    if ($em->getRepository('AppBundle:Hosting')->findOneBy(['hostname' => $hostname])) {
+
+		    return new JsonResponse([
+			    'code' => 503,
+			    'message' => 'hosting with that hostname already exists'
+		    ], 503);
+	    }
+
+	    $image = $em->getRepository('AppBundle:Image')->findOneBy(['imageName' => $imageName]);
+
+	    if (!$image) {
+
+		    return new JsonResponse([
+			    'code' => 504,
+			    'message' => 'image not found'
+		    ], 504);
+	    }
+
+	    $hosting = new Hosting();
+	    $hosting->setHostname($hostname);
+	    $hosting->setImage($image);
+	    $hosting->setCreated(new \DateTime());
+
+	    $em->persist($hosting);
+	    $em->flush();
+
+	    $response = [];
+
+	    $response['hosting'] = [
+		    'id'       => $hosting->getId(),
+		    'hostname' => $hosting->getHostname(),
+		    'image'    => $hosting->getImage()->getImageName(),
+		    'created'  => $hosting->getCreated()->format(\DateTime::W3C)
+	    ];
+
+	    return new JsonResponse($response);
+    }
+
 }
