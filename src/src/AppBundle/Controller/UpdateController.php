@@ -30,16 +30,9 @@ class UpdateController extends Controller
 	    ]);
 	    $docker = new Docker\Docker($client);
 	    $containerManager = $docker->getContainerManager();
-	    $imageManager = $docker->getImageManager();
 
-	    # update updater image
-	    $imageManager->create(
-		    null,
-		    [
-			    'fromImage' => 'dnljst/rocketpanel-updater',
-			    'tag'       => 'latest'
-		    ]
-	    );
+	    # pull latest version of dnljst/rocketpanel-updater
+	    shell_exec('docker pull dnljst/rocketpanel-updater:latest');
 
 	    try {
 		    # remove container if exists
