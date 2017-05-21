@@ -22,66 +22,43 @@ class UpdateController extends Controller
     	/** @var Logger $logger */
 	    $logger = $this->get('logger');
 
-    	$systemContainers = [
-    		'rocketpanel-mysql',
-		    'rocketpanel-control'
-	    ];
-
 	    $client = new Docker\DockerClient([
 		    'remote_socket' => 'unix:///var/run/docker.sock',
 		    'ssl' => false,
 	    ]);
 	    $docker = new Docker\Docker($client);
 	    $containerManager = $docker->getContainerManager();
+	    $imageManager = $docker->getImageManager();
 
-	    $updatesDone = false;
+	    # update updater image
+	    $imageManager->create(
+		    null,
+		    [
+			    'fromImage' => 'dnljst/rocketpanel-updater',
+			    'tag'       => 'latest'
+		    ]
+	    );
 
-    	foreach ($systemContainers as $systemContainer) {
+	    if ($containerManager->find('rocketpanel-updater')) {
 
-			$response = $containerManager->find($systemContainer);
+	    	$logger->critical('another rocketpanel-updater container is running');
 
-			if (!$response) {
-
-				return new JsonResponse([
-					'code' => 501,
-					'message' => 'unable to find system container ' . $systemContainer
-				], 501);
-			}
-
-			$logger->info('checking for updates for image ' . $response->getConfig()->getImage());
-
-			$oldImageId = $response->getImage();
-
-		    $imageManager = $docker->getImageManager();
-
-		    $imageManager->create(
-			    null,
-			    [
-				    'fromImage' => $response->getConfig()->getImage(),
-				    'tag'       => 'latest'
-			    ]
-		    );
-
-		    $updatedImage = $imageManager->find($response->getConfig()->getImage());
-
-		    if ($oldImageId != $updatedImage->getId()) {
-
-		    	$logger->info('docker image ' . $response->getConfig()->getImage() . ' was updated');
-			    $updatesDone = true;
-		    }
+		    return new JsonResponse([
+			    'code' => 501,
+			    'message' => 'another rocketpanel-updater container is running'
+		    ], 501);
 	    }
 
-	    if ($updatesDone) {
+		$logger->info('spawing update container');
 
-			$logger->info('system containers were updated, restarting system containers');
+	    $containerConfig = new Docker\API\Model\ContainerConfig();
+	    $containerConfig->setImage('dnljst/rocketpanel-updater:latest');
 
-    		foreach ($systemContainers as $systemContainer) {
-
-    			$logger->info('restarting '. $systemContainer);
-
-    			$containerManager->restart($systemContainer, ['t' => 10]);
-		    }
-	    }
+	    # add control over docker socket for update process
+	    $containerConfig->setVolumes(['/var/run/docker.sock:/var/run/docker.sock']);
+	    
+	    # create the rocketpanel-updater container
+        $containerManager->create($containerConfig, ['name' => 'rocketpanel-updater']);
 
         return new JsonResponse();
     }
