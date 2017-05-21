@@ -7,6 +7,7 @@ use AppBundle\Entity\Image;
 use Docker\API\Model\ContainerConfig;
 use Docker;
 use Doctrine\ORM\EntityManager;
+use Monolog\Logger;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -79,6 +80,9 @@ class HostingController extends Controller
 	 */
     public function postAction(Request $request)
     {
+    	/** @var Logger $logger */
+    	$logger = $this->get('logger');
+
 		$hostname  = basename(trim($request->get('hostname')));
 		$imageName = $request->get('imageName');
 
@@ -142,18 +146,12 @@ class HostingController extends Controller
 		    ]);
 		    $docker = new Docker\Docker($client);
 		    $containerManager = $docker->getContainerManager();
-		    $imageManager = $docker->getImageManager();
 
-		    $imageManager->create(
-		    	null,
-			    [
-			    	'fromImage' => $image->getImageName(),
-				    'tag'       => $image->getTagName()
-			    ]
-		    );
+		    # pull latest version of dnljst/rocketpanel-updater
+		    $logger->info(shell_exec('docker pull ' . $hosting->getImage()->getImageName() . ':' . $image->getTagName()));
 
 		    $containerConfig = new ContainerConfig();
-		    $containerConfig->setImage($hosting->getImage()->getImageName());
+		    $containerConfig->setImage($hosting->getImage()->getImageName() . ':' . $image->getTagName());
 
 		    $containerManager->create($containerConfig, ['name' => $hostingContainerName]);
 		    $containerManager->start($hostingContainerName);
