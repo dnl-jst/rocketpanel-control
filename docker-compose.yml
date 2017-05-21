@@ -3,6 +3,7 @@ version: '2'
 services:
 
   web:
+    container_name: rocketpanel-control
     build: .
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
@@ -19,6 +20,7 @@ services:
       - WEB_DOCUMENT_ROOT=/app/web
 
   mysql:
+    container_name: rocketpanel-mysql
     image: mysql:5.7
     command: [mysqld, --character-set-server=utf8mb4, --collation-server=utf8mb4_unicode_ci]
     volumes:
