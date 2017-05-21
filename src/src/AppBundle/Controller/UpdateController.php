@@ -44,7 +44,7 @@ class UpdateController extends Controller
 	    try {
 
 		    $containerConfig = new Docker\API\Model\ContainerConfig();
-		    $containerConfig->setImage('dnljst/rocketpanel-updater');
+		    $containerConfig->setImage('dnljst/rocketpanel-updater:latest');
 
 		    # add control over docker socket for update process
 		    $containerConfig->setVolumes([
