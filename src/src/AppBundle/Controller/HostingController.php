@@ -3,6 +3,8 @@
 namespace AppBundle\Controller;
 
 use AppBundle\Entity\Hosting;
+use Docker\API\Model\ContainerConfig;
+use Docker\Docker;
 use Doctrine\ORM\EntityManager;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -126,6 +128,17 @@ class HostingController extends Controller
 	    $fs = new Filesystem();
 	    $fs->mkdir('/opt/rocketpanel/vhosts/' . $hostname . '/httpdocs/');
 	    $fs->mkdir('/opt/rocketpanel/vhosts/' . $hostname . '/logs/');
+
+	    $hostingContainerName = 'rocketpanel-hosting-' . $hosting->getId();
+
+	    $docker = new Docker();
+	    $containerManager = $docker->getContainerManager();
+
+	    $containerConfig = new ContainerConfig();
+	    $containerConfig->setImage($hosting->getImage());
+
+	    $containerManager->create($containerConfig, ['name' => $hostingContainerName]);
+	    $containerManager->start($hostingContainerName);
 
 	    $em->flush();
 
