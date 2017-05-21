@@ -41,7 +41,7 @@ class AppKernel extends Kernel
 
     public function getLogDir()
     {
-        return dirname(__DIR__).'/var/logs';
+        return '/opt/rocketpanel/logs';
     }
 
     public function registerContainerConfiguration(LoaderInterface $loader)
