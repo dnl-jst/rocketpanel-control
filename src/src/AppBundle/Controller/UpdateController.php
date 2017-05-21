@@ -39,15 +39,18 @@ class UpdateController extends Controller
 		    ]
 	    );
 
-	    if ($containerManager->find('rocketpanel-updater')) {
+	    try {
 
-	    	$logger->critical('another rocketpanel-updater container is running');
+		    $containerManager->find('rocketpanel-updater');
+
+		    $logger->critical('another rocketpanel-updater container is running');
 
 		    return new JsonResponse([
 			    'code' => 501,
 			    'message' => 'another rocketpanel-updater container is running'
 		    ], 501);
-	    }
+
+	    } catch (\Exception $e) {}
 
 		$logger->info('spawing update container');
 
