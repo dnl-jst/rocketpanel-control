@@ -131,14 +131,30 @@ class HostingController extends Controller
 
 	    $hostingContainerName = 'rocketpanel-hosting-' . $hosting->getId();
 
-	    $docker = new Docker();
-	    $containerManager = $docker->getContainerManager();
+	    try {
+	    	
+		    $docker = new Docker([
+			    'remote_socket' => 'unix:///var/run/docker.sock',
+			    'ssl' => false,
+		    ]);
+		    $containerManager = $docker->getContainerManager();
 
-	    $containerConfig = new ContainerConfig();
-	    $containerConfig->setImage($hosting->getImage());
+		    $imageManager = $docker->getImageManager();
+		    $imageManager->pull($hosting->getImage()->getImageName());
 
-	    $containerManager->create($containerConfig, ['name' => $hostingContainerName]);
-	    $containerManager->start($hostingContainerName);
+		    $containerConfig = new ContainerConfig();
+		    $containerConfig->setImage($hosting->getImage()->getImageName());
+
+		    $containerManager->create($containerConfig, ['name' => $hostingContainerName]);
+		    $containerManager->start($hostingContainerName);
+
+	    } catch (Exception $e) {
+
+		    return new JsonResponse([
+			    'code' => 500,
+			    'message' => $e->getMessage()
+		    ], 500);
+	    }
 
 	    $em->flush();
 
