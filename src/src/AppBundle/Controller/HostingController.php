@@ -145,7 +145,7 @@ class HostingController extends Controller
 		    $containerManager->create($containerConfig, ['name' => $hostingContainerName]);
 		    $containerManager->start($hostingContainerName);
 
-	    } catch (Exception $e) {
+	    } catch (\Exception $e) {
 
 		    return new JsonResponse([
 			    'code' => 500,
