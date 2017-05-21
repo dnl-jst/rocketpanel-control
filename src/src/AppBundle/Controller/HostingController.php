@@ -139,9 +139,6 @@ class HostingController extends Controller
 		    $docker = new Docker\Docker($client);
 		    $containerManager = $docker->getContainerManager();
 
-		    $imageManager = $docker->getImageManager();
-		    $imageManager->pull($hosting->getImage()->getImageName());
-
 		    $containerConfig = new ContainerConfig();
 		    $containerConfig->setImage($hosting->getImage()->getImageName());
 
