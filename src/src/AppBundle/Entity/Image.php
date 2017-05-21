@@ -24,6 +24,11 @@ class Image
 	private $imageName;
 
 	/**
+	 * @ORM\Column(type="string", length=255, options={"default": "latest"})
+	 */
+	private $tagName;
+
+	/**
 	 * @ORM\Column(type="string", length=255)
 	 */
 	private $title;
@@ -115,4 +120,28 @@ class Image
         return $this->created;
     }
 
+
+    /**
+     * Set tagName
+     *
+     * @param string $tagName
+     *
+     * @return Image
+     */
+    public function setTagName($tagName)
+    {
+        $this->tagName = $tagName;
+
+        return $this;
+    }
+
+    /**
+     * Get tagName
+     *
+     * @return string
+     */
+    public function getTagName()
+    {
+        return $this->tagName;
+    }
 }
