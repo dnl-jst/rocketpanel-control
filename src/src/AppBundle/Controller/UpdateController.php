@@ -52,11 +52,15 @@ class UpdateController extends Controller
 		    $containerConfig->setImage('dnljst/rocketpanel-updater');
 
 		    # add control over docker socket for update process
-		    $containerConfig->setVolumes(['/var/run/docker.sock' => new \stdClass()]);
+		    $containerConfig->setVolumes([
+		    	'/opt/rocketpanel' => new \stdClass(),
+			    '/var/run/docker.sock' => new \stdClass()
+		    ]);
 
 		    # set host config with binds
 		    $hostConfig = new Docker\API\Model\HostConfig();
 		    $hostConfig->setBinds([
+			    '/opt/rocketpanel:/opt/rocketpanel',
 			    '/var/run/docker.sock:/var/run/docker.sock'
 		    ]);
 
