@@ -151,7 +151,7 @@ class HostingController extends Controller
 		    $logger->info(shell_exec('docker pull ' . $hosting->getImage()->getImageName() . ':' . $image->getTagName()));
 
 		    $containerConfig = new ContainerConfig();
-		    $containerConfig->setImage($hosting->getImage()->getImageName() . ':' . $image->getTagName());
+		    $containerConfig->setImage($hosting->getImage()->getImageName());
 
 		    $containerManager->create($containerConfig, ['name' => $hostingContainerName]);
 		    $containerManager->start($hostingContainerName);
