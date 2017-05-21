@@ -19,6 +19,8 @@ class UpdateController extends Controller
      */
     public function putAction()
     {
+    	set_time_limit(0);
+
     	/** @var Logger $logger */
 	    $logger = $this->get('logger');
 
@@ -39,18 +41,8 @@ class UpdateController extends Controller
 		    ]
 	    );
 
-	    try {
-
-		    $containerManager->find('rocketpanel-updater');
-
-		    $logger->critical('another rocketpanel-updater container is running');
-
-		    return new JsonResponse([
-			    'code' => 501,
-			    'message' => 'another rocketpanel-updater container is running'
-		    ], 501);
-
-	    } catch (\Exception $e) {}
+	    # remove container afterwards
+	    $containerManager->remove('rocketpanel-updater');
 
 		$logger->info('spawing update container');
 
@@ -60,16 +52,21 @@ class UpdateController extends Controller
 		    $containerConfig->setImage('dnljst/rocketpanel-updater');
 
 		    # add control over docker socket for update process
-		    $containerConfig->setVolumes(['/var/run/docker.sock:/var/run/docker.sock']);
+		    $containerConfig->setVolumes(['/var/run/docker.sock' => new \stdClass()]);
+
+		    # set host config with binds
+		    $hostConfig = new Docker\API\Model\HostConfig();
+		    $hostConfig->setBinds([
+			    '/var/run/docker.sock:/var/run/docker.sock'
+		    ]);
+
+		    $containerConfig->setHostConfig($hostConfig);
 
 		    # create the rocketpanel-updater container
 		    $containerManager->create($containerConfig, ['name' => 'rocketpanel-updater']);
 
-		    # wait for container to finish
-		    $containerManager->wait('rocketpanel-updater');
-
-		    # remove container afterwards
-		    $containerManager->remove('rocketpanel-updater');
+		    # start the container
+		    $containerManager->start('rocketpanel-updater');
 
 	    } catch (\Exception $e) {
 
