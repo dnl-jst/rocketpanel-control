@@ -54,14 +54,27 @@ class UpdateController extends Controller
 
 		$logger->info('spawing update container');
 
-	    $containerConfig = new Docker\API\Model\ContainerConfig();
-	    $containerConfig->setImage('dnljst/rocketpanel-updater:latest');
+	    try {
 
-	    # add control over docker socket for update process
-	    $containerConfig->setVolumes(['/var/run/docker.sock:/var/run/docker.sock']);
+		    $containerConfig = new Docker\API\Model\ContainerConfig();
+		    $containerConfig->setImage('dnljst/rocketpanel-updater:latest');
 
-	    # create the rocketpanel-updater container
-        $containerManager->create($containerConfig, ['name' => 'rocketpanel-updater', 'rm' => true]);
+		    # add control over docker socket for update process
+		    $containerConfig->setVolumes(['/var/run/docker.sock:/var/run/docker.sock']);
+
+		    # create the rocketpanel-updater container
+		    $containerManager->create($containerConfig, ['name' => 'rocketpanel-updater', 'rm' => true]);
+
+	    } catch (\Exception $e) {
+
+			$logger->critical($e->getMessage());
+
+		    return new JsonResponse([
+			    'code' => 500,
+			    'message' => $e->getMessage()
+		    ], 500);
+	    }
+
 
         return new JsonResponse();
     }
