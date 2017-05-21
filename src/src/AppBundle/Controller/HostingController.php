@@ -166,6 +166,8 @@ class HostingController extends Controller
 		    ], 500);
 	    }
 
+	    $this->updateProxyConfiguration();
+
 	    $response = [];
 
 	    $response['hosting'] = [
@@ -226,7 +228,32 @@ class HostingController extends Controller
 		$em->remove($hosting);
 		$em->flush();
 
+		$this->updateProxyConfiguration();
+
 		return new JsonResponse();
+	}
+
+	protected function updateProxyConfiguration()
+	{
+		/** @var EntityManager $em */
+		$em = $this->getDoctrine()->getManager();
+
+		/** @var Hosting[] $hostings */
+		$hostings = $em->getRepository('AppBundle:Hosting')->findAll();
+
+		$caddyFile = '';
+
+		foreach ($hostings as $hosting) {
+
+			$caddyFile .= '
+
+' . $hosting->getHostname() . '{
+	proxy / localhost:8444	
+}';
+
+		}
+
+		file_put_contents('/opt/rocketpanel/etc/Caddyfile', $caddyFile);
 	}
 
 }
