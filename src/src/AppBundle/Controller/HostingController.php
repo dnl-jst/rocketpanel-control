@@ -178,4 +178,55 @@ class HostingController extends Controller
 	    return new JsonResponse($response);
     }
 
+	/**
+	 * @Route("/{id}", name="hosting_delete")
+	 * @Method({"DELETE"})
+	 */
+	public function deleteAction($id)
+	{
+		$id = (int)$id;
+
+		if (!$id) {
+
+			return new JsonResponse([
+				'code' => 501,
+				'message' => 'parameters missing'
+			], 501);
+		}
+
+		/** @var EntityManager $em */
+		$em = $this->getDoctrine()->getManager();
+
+		/** @var Hosting $hosting */
+		$hosting = $em->getRepository('AppBundle:Hosting')->findOneBy(['id' => $id]);
+
+		if (!$hosting) {
+
+			return new JsonResponse([
+				'code' => 502,
+				'message' => 'hosting not found'
+			], 502);
+		}
+
+		$client = new Docker\DockerClient([
+			'remote_socket' => 'unix:///var/run/docker.sock',
+			'ssl' => false,
+		]);
+		$docker = new Docker\Docker($client);
+		$containerManager = $docker->getContainerManager();
+
+		$hostingContainerName = 'rocketpanel-hosting-' . $hosting->getId();
+
+		$containerManager->stop($hostingContainerName);
+		$containerManager->remove($hostingContainerName);
+
+		$fs = new Filesystem();
+		$fs->remove('/opt/rocketpanel/vhosts/' . $hosting->getHostname() . '/');
+
+		$em->remove($hosting);
+		$em->flush();
+
+		return new JsonResponse();
+	}
+
 }
