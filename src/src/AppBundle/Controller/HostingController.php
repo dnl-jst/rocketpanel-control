@@ -4,7 +4,7 @@ namespace AppBundle\Controller;
 
 use AppBundle\Entity\Hosting;
 use Docker\API\Model\ContainerConfig;
-use Docker\Docker;
+use Docker;
 use Doctrine\ORM\EntityManager;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -132,11 +132,11 @@ class HostingController extends Controller
 	    $hostingContainerName = 'rocketpanel-hosting-' . $hosting->getId();
 
 	    try {
-	    	
-		    $docker = new Docker([
+		    $client = new Docker\DockerClient([
 			    'remote_socket' => 'unix:///var/run/docker.sock',
 			    'ssl' => false,
 		    ]);
+		    $docker = new Docker\Docker($client);
 		    $containerManager = $docker->getContainerManager();
 
 		    $imageManager = $docker->getImageManager();
