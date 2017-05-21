@@ -7,6 +7,7 @@ use Doctrine\ORM\EntityManager;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -75,7 +76,7 @@ class HostingController extends Controller
 	 */
     public function postAction(Request $request)
     {
-		$hostname  = $request->get('hostname');
+		$hostname  = basename(trim($request->get('hostname')));
 		$imageName = $request->get('imageName');
 
 		if (!$hostname || !$imageName){
@@ -121,6 +122,11 @@ class HostingController extends Controller
 	    $hosting->setCreated(new \DateTime());
 
 	    $em->persist($hosting);
+
+	    $fs = new Filesystem();
+	    $fs->mkdir('/opt/rocketpanel/vhosts/' . $hostname . '/httpdocs/');
+	    $fs->mkdir('/opt/rocketpanel/vhosts/' . $hostname . '/logs/');
+
 	    $em->flush();
 
 	    $response = [];
