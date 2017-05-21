@@ -3,6 +3,7 @@
 namespace AppBundle\Controller;
 
 use AppBundle\Entity\Hosting;
+use AppBundle\Entity\Image;
 use Docker\API\Model\ContainerConfig;
 use Docker;
 use Doctrine\ORM\EntityManager;
@@ -108,6 +109,7 @@ class HostingController extends Controller
 		    ], 503);
 	    }
 
+	    /** @var Image $image */
 	    $image = $em->getRepository('AppBundle:Image')->findOneBy(['imageName' => $imageName]);
 
 	    if (!$image) {
@@ -140,6 +142,15 @@ class HostingController extends Controller
 		    ]);
 		    $docker = new Docker\Docker($client);
 		    $containerManager = $docker->getContainerManager();
+		    $imageManager = $docker->getImageManager();
+
+		    $imageManager->create(
+		    	null,
+			    [
+			    	'fromImage' => $image->getImageName(),
+				    'tag'       => $image->getTagName()
+			    ]
+		    );
 
 		    $containerConfig = new ContainerConfig();
 		    $containerConfig->setImage($hosting->getImage()->getImageName());
