@@ -129,6 +129,8 @@ class HostingController extends Controller
 	    $fs->mkdir('/opt/rocketpanel/vhosts/' . $hostname . '/httpdocs/');
 	    $fs->mkdir('/opt/rocketpanel/vhosts/' . $hostname . '/logs/');
 
+	    $em->flush();
+
 	    $hostingContainerName = 'rocketpanel-hosting-' . $hosting->getId();
 
 	    try {
@@ -152,8 +154,6 @@ class HostingController extends Controller
 			    'message' => $e->getMessage()
 		    ], 500);
 	    }
-
-	    $em->flush();
 
 	    $response = [];
 
