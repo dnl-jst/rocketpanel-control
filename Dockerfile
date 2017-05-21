@@ -4,3 +4,4 @@ COPY ./src /app
 RUN mkdir -p /app/var/dev && chown -R application:application /app/var && chmod -R 777 /app/var
 RUN cd /app && composer install
 RUN gpasswd -a application docker
+RUN chown root:docker /var/run/docker.sock
