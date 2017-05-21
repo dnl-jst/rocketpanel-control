@@ -32,6 +32,11 @@ class Hosting
 	private $image;
 
 	/**
+	 * @ORM\Column(type="string", length=255, nullable=true)
+	 */
+	private $webroot;
+
+	/**
 	 * @ORM\Column(type="datetime")
 	 */
 	private $created;
@@ -118,4 +123,28 @@ class Hosting
         return $this->image;
     }
 
+
+    /**
+     * Set webroot
+     *
+     * @param string $webroot
+     *
+     * @return Hosting
+     */
+    public function setWebroot($webroot)
+    {
+        $this->webroot = $webroot;
+
+        return $this;
+    }
+
+    /**
+     * Get webroot
+     *
+     * @return string
+     */
+    public function getWebroot()
+    {
+        return $this->webroot;
+    }
 }
