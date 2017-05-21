@@ -5,7 +5,7 @@ services:
   web:
     build: .
     volumes:
-      - /private/var/run/docker.sock:/var/run/docker.sock
+      - /var/run/docker.sock:/var/run/docker.sock
       - ./src:/app
       - ./opt-rocketpanel:/opt/rocketpanel
       - /app/var
