@@ -6,9 +6,9 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity()
- * @ORM\Table(name="ftp_accounts")
+ * @ORM\Table(name="dns_records")
  */
-class FtpAccount
+class DnsRecord
 {
 	
 	/**
@@ -29,22 +29,33 @@ class FtpAccount
 	/**
 	 * @ORM\Column(type="string", length=255)
 	 */
-	private $folder;
+	private $name;
 
 	/**
-	 * @ORM\Column(type="string", length=255, unique=true)
+	 * @ORM\Column(type="string", length=10)
 	 */
-	private $username;
+	private $type;
 
 	/**
-	 * @ORM\Column(type="string", length=255)
+	 * @ORM\Column(type="text")
 	 */
-	private $password;
+	private $content;
+
+	/**
+	 * @ORM\Column(type="integer", options={"default": 600})
+	 */
+	private $ttl = 600;
+
+	/**
+	 * @ORM\Column(type="integer", nullable=true)
+	 */
+	private $prio;
 
 	/**
 	 * @ORM\Column(type="datetime")
 	 */
 	private $created;
+
 
     /**
      * Get id
@@ -57,75 +68,123 @@ class FtpAccount
     }
 
     /**
-     * Set folder
+     * Set name
      *
-     * @param string $folder
+     * @param string $name
      *
-     * @return FtpAccount
+     * @return DnsRecord
      */
-    public function setFolder($folder)
+    public function setName($name)
     {
-        $this->folder = $folder;
+        $this->name = $name;
 
         return $this;
     }
 
     /**
-     * Get folder
+     * Get name
      *
      * @return string
      */
-    public function getFolder()
+    public function getName()
     {
-        return $this->folder;
+        return $this->name;
     }
 
     /**
-     * Set username
+     * Set type
      *
-     * @param string $username
+     * @param string $type
      *
-     * @return FtpAccount
+     * @return DnsRecord
      */
-    public function setUsername($username)
+    public function setType($type)
     {
-        $this->username = $username;
+        $this->type = $type;
 
         return $this;
     }
 
     /**
-     * Get username
+     * Get type
      *
      * @return string
      */
-    public function getUsername()
+    public function getType()
     {
-        return $this->username;
+        return $this->type;
     }
 
     /**
-     * Set password
+     * Set content
      *
-     * @param string $password
+     * @param string $content
      *
-     * @return FtpAccount
+     * @return DnsRecord
      */
-    public function setPassword($password)
+    public function setContent($content)
     {
-        $this->password = $password;
+        $this->content = $content;
 
         return $this;
     }
 
     /**
-     * Get password
+     * Get content
      *
      * @return string
      */
-    public function getPassword()
+    public function getContent()
     {
-        return $this->password;
+        return $this->content;
+    }
+
+    /**
+     * Set ttl
+     *
+     * @param integer $ttl
+     *
+     * @return DnsRecord
+     */
+    public function setTtl($ttl)
+    {
+        $this->ttl = $ttl;
+
+        return $this;
+    }
+
+    /**
+     * Get ttl
+     *
+     * @return integer
+     */
+    public function getTtl()
+    {
+        return $this->ttl;
+    }
+
+    /**
+     * Set prio
+     *
+     * @param integer $prio
+     *
+     * @return DnsRecord
+     */
+    public function setPrio($prio)
+    {
+        $this->prio = $prio;
+
+        return $this;
+    }
+
+    /**
+     * Get prio
+     *
+     * @return integer
+     */
+    public function getPrio()
+    {
+        return $this->prio;
     }
 
     /**
@@ -133,7 +192,7 @@ class FtpAccount
      *
      * @param \DateTime $created
      *
-     * @return FtpAccount
+     * @return DnsRecord
      */
     public function setCreated($created)
     {
@@ -157,7 +216,7 @@ class FtpAccount
      *
      * @param \AppBundle\Entity\Hosting $hosting
      *
-     * @return FtpAccount
+     * @return DnsRecord
      */
     public function setHosting(\AppBundle\Entity\Hosting $hosting = null)
     {
@@ -175,5 +234,4 @@ class FtpAccount
     {
         return $this->hosting;
     }
-
 }
