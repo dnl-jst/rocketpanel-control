@@ -37,6 +37,16 @@ class Hosting
 	private $webroot;
 
 	/**
+	 * @ORM\Column(type="string", length=255, options={"default": "none"})
+	 */
+	private $dnsMode = 'none';
+
+	/**
+	 * @ORM\Column(type="string", length=255, nullable=true)
+	 */
+	private $dnsMaster;
+
+	/**
 	 * @ORM\Column(type="datetime")
 	 */
 	private $created;
@@ -147,4 +157,53 @@ class Hosting
     {
         return $this->webroot;
     }
+
+    /**
+     * Set dnsMode
+     *
+     * @param string $dnsMode
+     *
+     * @return Hosting
+     */
+    public function setDnsMode($dnsMode)
+    {
+        $this->dnsMode = $dnsMode;
+
+        return $this;
+    }
+
+    /**
+     * Get dnsMode
+     *
+     * @return string
+     */
+    public function getDnsMode()
+    {
+        return $this->dnsMode;
+    }
+
+    /**
+     * Set dnsMaster
+     *
+     * @param string $dnsMaster
+     *
+     * @return Hosting
+     */
+    public function setDnsMaster($dnsMaster)
+    {
+        $this->dnsMaster = $dnsMaster;
+
+        return $this;
+    }
+
+    /**
+     * Get dnsMaster
+     *
+     * @return string
+     */
+    public function getDnsMaster()
+    {
+        return $this->dnsMaster;
+    }
+
 }
