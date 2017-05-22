@@ -51,16 +51,16 @@ class HostingController extends Controller
     }
 
 	/**
-	 * @Route("/{id}", name="hosting_getById")
+	 * @Route("/{hostname}", name="hosting_getByHostname")
 	 * @Method({"GET"})
 	 */
-    public function getByIdAction($id)
+    public function getByHostnameAction($hostname)
     {
 	    /** @var EntityManager $em */
 	    $em = $this->getDoctrine()->getManager();
 
 	    /** @var Hosting[] $hostings */
-	    $hosting = $em->getRepository('AppBundle:Hosting')->findOneBy(['id' => $id]);
+	    $hosting = $em->getRepository('AppBundle:Hosting')->findOneBy(['hostname' => $hostname]);
 
 	    $response = [];
 
@@ -179,14 +179,12 @@ class HostingController extends Controller
     }
 
 	/**
-	 * @Route("/{id}", name="hosting_delete")
+	 * @Route("/{hostname}", name="hosting_delete")
 	 * @Method({"DELETE"})
 	 */
-	public function deleteAction($id)
+	public function deleteAction($hostname = null)
 	{
-		$id = (int)$id;
-
-		if (!$id) {
+		if (!$hostname) {
 
 			return new JsonResponse([
 				'code' => 501,
@@ -198,7 +196,7 @@ class HostingController extends Controller
 		$em = $this->getDoctrine()->getManager();
 
 		/** @var Hosting $hosting */
-		$hosting = $em->getRepository('AppBundle:Hosting')->findOneBy(['id' => $id]);
+		$hosting = $em->getRepository('AppBundle:Hosting')->findOneBy(['hostname' => $hostname]);
 
 		if (!$hosting) {
 
