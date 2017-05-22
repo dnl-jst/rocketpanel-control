@@ -51,6 +51,11 @@ class Hosting
 	 */
 	private $created;
 
+	/**
+	 * @ORM\OneToMany(targetEntity="HostingAlias", mappedBy="hosting", cascade={"remove"})
+	 */
+	protected $aliases;
+
     /**
      * Get id
      *
@@ -206,4 +211,45 @@ class Hosting
         return $this->dnsMaster;
     }
 
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->aliases = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
+    /**
+     * Add alias
+     *
+     * @param \AppBundle\Entity\HostingAlias $alias
+     *
+     * @return Hosting
+     */
+    public function addAlias(\AppBundle\Entity\HostingAlias $alias)
+    {
+        $this->aliases[] = $alias;
+
+        return $this;
+    }
+
+    /**
+     * Remove alias
+     *
+     * @param \AppBundle\Entity\HostingAlias $alias
+     */
+    public function removeAlias(\AppBundle\Entity\HostingAlias $alias)
+    {
+        $this->aliases->removeElement($alias);
+    }
+
+    /**
+     * Get aliases
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getAliases()
+    {
+        return $this->aliases;
+    }
 }
